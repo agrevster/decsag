@@ -1,43 +1,18 @@
-from dataclasses import dataclass
-from dataclass_binder import Binder
-import tomllib as toml
+from typing import Self
+from pydantic import BaseModel, ValidationError, model_validator
+from pydantic_extra_types.color import Color
+import tomllib
 import datetime
-from enum import Enum, auto
-from typing import final
+from enum import StrEnum, auto
 
 
-@dataclass()
-class StyleConfig:
-    bg_color: str
-    title_color: str
-    text_color: str
-    critical_color: str
-    high_color: str
-    medium_color: str
-    low_color: str
-    info_color: str
-
-
-@dataclass
-class Config:
-    org_name: str
-    org_logo_path: str | None
-    date: datetime.date
-    style_config: StyleConfig
-
-
-@dataclass
-class Page:
-    pass
-
-
-class SpecialPageType(Enum):
+class SpecialPageType(StrEnum):
     Title = auto()
     Blank = auto()
     Contents = auto()
 
 
-class Impact(Enum):
+class Impact(StrEnum):
     Critical = auto()
     High = auto()
     Medum = auto()
@@ -45,18 +20,15 @@ class Impact(Enum):
     Info = auto()
 
 
-@dataclass
-class Specialpage:
+class SpecialPage(BaseModel):
     special_page_type: SpecialPageType
 
 
-@dataclass
-class MarkdownPage(Page):
+class MarkdownPage(BaseModel):
     text: str
 
 
-@dataclass
-class CVEVuln:
+class CVEVuln(BaseModel):
     id: str
     score: float
     desc: str
@@ -66,17 +38,56 @@ class CVEVuln:
     cve_affected: str
 
 
-@dataclass
-class VulnPage(Page):
+class VulnPage(BaseModel):
     vuln: CVEVuln
-    impact: Impact
+    impact: int
     evidence: list[str]
+
+
+class StyleConfig(BaseModel):
+    bg_color: Color
+    title_color: Color
+    text_color: Color
+    critical_color: Color
+    high_color: Color
+    medium_color: Color
+    low_color: Color
+    info_color: Color
+
+
+class Page(BaseModel):
+    markdown: MarkdownPage | None = None
+    vuln: VulnPage | None = None
+    special: SpecialPage | None = None
+
+    @model_validator(mode="after")
+    def check_at_least_one_field_used(self) -> Self:
+        items = self.__dict__.items()
+
+        null_fields = [field for field, value in items if value is None]
+        if len(null_fields) != len(items) - 1:
+            raise ValueError(f"You must have at least one active page type!")
+        return self
+
+
+class Config(BaseModel):
+    org_name: str
+    date: datetime.date
+    style_config: StyleConfig
+    page_order: list[str]
+    pages: dict[str, Page]
+    org_logo_path: str | None = None
 
 
 # Creates a Config obj from a given filename by parsing the toml file.
 def load_config_from_file(filename: str) -> Config:
     if ".toml" not in filename:
         raise ValueError("File must end in .toml")
-    binder = Binder(Config)
-    config = binder.parse_toml(filename)
-    return config
+
+    with open(filename, "rb") as file:
+        toml = tomllib.load(file)
+        try:
+            m = Config.model_validate(toml)
+            return m
+        except ValidationError as e:
+            print(e.errors())

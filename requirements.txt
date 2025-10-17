@@ -1,3 +1,8 @@
-dataclass-binder==0.3.4
+annotated-types==0.7.0
 Jinja2==3.1.6
 MarkupSafe==3.0.3
+pydantic==2.12.3
+pydantic-extra-types==2.10.6
+pydantic_core==2.41.4
+typing-inspection==0.4.2
+typing_extensions==4.15.0
