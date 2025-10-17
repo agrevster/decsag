@@ -1,3 +1,4 @@
+import json
 from typing import Self
 from pydantic import BaseModel, ValidationError, model_validator
 from pydantic_extra_types.color import Color
@@ -80,7 +81,7 @@ class Config(BaseModel):
 
 
 # Creates a Config obj from a given filename by parsing the toml file.
-def load_config_from_file(filename: str) -> Config:
+def load_config_from_file(filename: str) -> Config | None:
     if ".toml" not in filename:
         raise ValueError("File must end in .toml")
 
@@ -91,3 +92,8 @@ def load_config_from_file(filename: str) -> Config:
             return m
         except ValidationError as e:
             print(e.errors())
+    return None
+
+
+def generate_schema() -> str:
+    return json.dumps(Config.model_json_schema(), indent=2)

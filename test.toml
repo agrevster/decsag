@@ -1,3 +1,4 @@
+#:schema ./schema.json
 org_name = "ORG Name"
 date = 2025-10-17
 page_order = ["title", "blank"]
@@ -13,8 +14,8 @@ low_color = "#40a02b"
 info_color = "#04a5e5"
 
 # Print
-[pages.title.special]
-special_page_type = "title"
+[pages.title]
+special.special_page_type = "title"
 
 [pages.title.blank]
 special_page_type = "blank"

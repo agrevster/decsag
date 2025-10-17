@@ -1,0 +1,250 @@
+{
+  "$defs": {
+    "CVEVuln": {
+      "properties": {
+        "id": {
+          "title": "Id",
+          "type": "string"
+        },
+        "score": {
+          "title": "Score",
+          "type": "number"
+        },
+        "desc": {
+          "title": "Desc",
+          "type": "string"
+        },
+        "impact": {
+          "title": "Impact",
+          "type": "string"
+        },
+        "affected_resources": {
+          "title": "Affected Resources",
+          "type": "string"
+        },
+        "remidation": {
+          "title": "Remidation",
+          "type": "string"
+        },
+        "cve_affected": {
+          "title": "Cve Affected",
+          "type": "string"
+        }
+      },
+      "required": [
+        "id",
+        "score",
+        "desc",
+        "impact",
+        "affected_resources",
+        "remidation",
+        "cve_affected"
+      ],
+      "title": "CVEVuln",
+      "type": "object"
+    },
+    "MarkdownPage": {
+      "properties": {
+        "text": {
+          "title": "Text",
+          "type": "string"
+        }
+      },
+      "required": [
+        "text"
+      ],
+      "title": "MarkdownPage",
+      "type": "object"
+    },
+    "Page": {
+      "properties": {
+        "markdown": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/MarkdownPage"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        },
+        "vuln": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/VulnPage"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        },
+        "special": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/SpecialPage"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        }
+      },
+      "title": "Page",
+      "type": "object"
+    },
+    "SpecialPage": {
+      "properties": {
+        "special_page_type": {
+          "$ref": "#/$defs/SpecialPageType"
+        }
+      },
+      "required": [
+        "special_page_type"
+      ],
+      "title": "SpecialPage",
+      "type": "object"
+    },
+    "SpecialPageType": {
+      "enum": [
+        "title",
+        "blank",
+        "contents"
+      ],
+      "title": "SpecialPageType",
+      "type": "string"
+    },
+    "StyleConfig": {
+      "properties": {
+        "bg_color": {
+          "format": "color",
+          "title": "Bg Color",
+          "type": "string"
+        },
+        "title_color": {
+          "format": "color",
+          "title": "Title Color",
+          "type": "string"
+        },
+        "text_color": {
+          "format": "color",
+          "title": "Text Color",
+          "type": "string"
+        },
+        "critical_color": {
+          "format": "color",
+          "title": "Critical Color",
+          "type": "string"
+        },
+        "high_color": {
+          "format": "color",
+          "title": "High Color",
+          "type": "string"
+        },
+        "medium_color": {
+          "format": "color",
+          "title": "Medium Color",
+          "type": "string"
+        },
+        "low_color": {
+          "format": "color",
+          "title": "Low Color",
+          "type": "string"
+        },
+        "info_color": {
+          "format": "color",
+          "title": "Info Color",
+          "type": "string"
+        }
+      },
+      "required": [
+        "bg_color",
+        "title_color",
+        "text_color",
+        "critical_color",
+        "high_color",
+        "medium_color",
+        "low_color",
+        "info_color"
+      ],
+      "title": "StyleConfig",
+      "type": "object"
+    },
+    "VulnPage": {
+      "properties": {
+        "vuln": {
+          "$ref": "#/$defs/CVEVuln"
+        },
+        "impact": {
+          "title": "Impact",
+          "type": "integer"
+        },
+        "evidence": {
+          "items": {
+            "type": "string"
+          },
+          "title": "Evidence",
+          "type": "array"
+        }
+      },
+      "required": [
+        "vuln",
+        "impact",
+        "evidence"
+      ],
+      "title": "VulnPage",
+      "type": "object"
+    }
+  },
+  "properties": {
+    "org_name": {
+      "title": "Org Name",
+      "type": "string"
+    },
+    "date": {
+      "format": "date",
+      "title": "Date",
+      "type": "string"
+    },
+    "style_config": {
+      "$ref": "#/$defs/StyleConfig"
+    },
+    "page_order": {
+      "items": {
+        "type": "string"
+      },
+      "title": "Page Order",
+      "type": "array"
+    },
+    "pages": {
+      "additionalProperties": {
+        "$ref": "#/$defs/Page"
+      },
+      "title": "Pages",
+      "type": "object"
+    },
+    "org_logo_path": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Org Logo Path"
+    }
+  },
+  "required": [
+    "org_name",
+    "date",
+    "style_config",
+    "page_order",
+    "pages"
+  ],
+  "title": "Config",
+  "type": "object"
+}
